@@ -1,0 +1,23 @@
+version: '3'
+services:
+  sms_service:
+    build: ./api_server
+    image: tiny-responder
+    environment:
+      - SERVICE_NAME=sms_service
+
+  ocr_service:
+    image: tiny-responder
+    environment:
+      - SERVICE_NAME=ocr_service
+
+  gateway:
+    build: ./haproxy
+    depends_on:
+      - sms_service
+      - ocr_service
+    extra_hosts:
+      - "sms.services.com:127.0.0.1"
+      - "ocr.services.com:127.0.0.1"
+    ports:
+      - 8082:80
